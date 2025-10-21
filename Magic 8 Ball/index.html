@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calyssa’s Magic 8-Ball</title>
+
+  <!-- Retro pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#000;
+      --pink:#ff1493;
+      --pink-soft:#ff78c6;
+      --card:#ffffffcc;
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+
+    /* ====== BACKGROUND ====== */
+    body{
+      font-family:"VT323", monospace;
+      color:var(--ink);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+
+      /* your own background image */
+      background: url('./background.jpg') center/cover no-repeat fixed;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    
+/* MOVING PINK TEXT BACKGROUND OVERLAY */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:0.30;                 /* adjust stronger/weaker */
+  background-repeat:repeat;
+  background-size: 520px 200px; /* tile size */
+  background-position: 0 0;
+  mix-blend-mode: screen;       /* blends nicely over your photo */
+  animation: drift 4s linear infinite;
+
+/* SVG tile that says "Calyssa's Magic 8- Ball" on pink */
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='520' height='200'>\
+  <defs>\
+    <linearGradient id='p' x1='0' y1='0' x2='1' y2='1'>\
+      <stop offset='0%' stop-color='%23ff1493'/>\
+      <stop offset='100%' stop-color='%23ff78c6'/>\
+    </linearGradient>\
+  </defs>\
+  <rect width='100%' height='100%' fill='url(%23p)'/>\
+  <g fill='23ffffff%' fill-opacity='0.9' font-family='VT323, monospace' font-size='36'>\
+    <text x='16' y='56'>Calyssa%27s Magic 8- Ball</text>\
+    <text x='16' y='108'>Calyssa%27s Magic 8- Ball</text>\
+    <text x='16' y='160'>Calyssa%27s Magic 8- Ball</text>\
+  </g>\
+</svg>");
+}
+
+@keyframes drift{
+  0%   { background-position: 0 0; }
+  100% { background-position: 520px 200px; }
+}
+
+
+    /* ====== MAIN CARD ====== */
+    .app{
+      width:min(560px,100%);
+      background:var(--card);
+      backdrop-filter:blur(6px);
+      border:2px solid #000;
+      border-radius:var(--radius);
+      box-shadow:6px 6px 0 #000,0 0 20px rgba(255,105,180,.35);
+      padding:18px 18px 22px;
+    }
+
+    header{text-align:center;margin-bottom:14px;}
+
+    /* title box */
+    .title{
+      display:inline-block;
+      padding:10px 16px;
+      background:linear-gradient(90deg,var(--pink),var(--pink-soft));
+      color:#fff;
+      border:9x solid #000;
+      border-radius:16px;
+      text-shadow:4px 4px 0 #000;
+      font-size:clamp(28px,8vw,44px);
+      letter-spacing:1px;
+    }
+    .subtitle{margin:8px 0 0;font-size:18px;}
+
+    /* ====== HERO AREA ====== */
+    .hero{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin:12px 0 10px;
+    }
+
+    /* your image, no border */
+    .avatar{
+      width:140px;
+      height:140px;
+      display:grid;
+      place-items:center;
+    }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    /* ====== CLASSIC 8-BALL ====== */
+    .ball{
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,#555 0%,#000 100%);
+      border:2px solid #000;
+      position:relative;
+      box-shadow:3px 3px 0 #ffafda;
+      transition:transform .2s ease;
+    }
+    .ball::before{
+      content:"";
+      position:absolute;
+      top:50%;left:50%;
+      width:60px;height:60px;
+      border-radius:50%;
+      background:#fff;
+      border:2px solid #000;
+      transform:translate(-50%,-50%);
+    }
+    .window{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      font-weight:bold;
+      color:#000;
+    }
+    .ball.shake{animation:shake .6s ease;}
+    @keyframes shake{
+      0%,100%{transform:translateX(0) rotate(0);}
+      20%{transform:translateX(-8px) rotate(-2deg);}
+      40%{transform:translateX(8px) rotate(2deg);}
+      60%{transform:translateX(-6px) rotate(-2deg);}
+      80%{transform:translateX(6px) rotate(2deg);}
+    }
+
+    /* ====== QUESTION BOX ====== */
+    .card{
+      border:2px solid #000;
+      border-radius:16px;
+      background:#fff;
+      box-shadow:3px 3px 0 #000;
+      padding:12px;
+    }
+    .row{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;}
+    input[type="text"]{
+      flex:1;
+      font:inherit;
+      padding:10px 12px;
+      border:2px solid #000;
+      border-radius:10px;
+      outline:none;
+    }
+    button{
+      font:inherit;
+      padding:10px 14px;
+      border:2px solid #000;
+      border-radius:10px;
+      background:linear-gradient(180deg,var(--pink-soft),var(--pink));
+      color:#fff;
+      cursor:pointer;
+      box-shadow:2px 2px 0 #000;
+      transition:transform .05s ease;
+    }
+    button:active{transform:translateY(2px);box-shadow:0 0 0 #000;}
+
+    .answer{
+      margin-top:10px;
+      text-align:center;
+      font-size:clamp(20px,6vw,28px);
+      min-height:34px;
+      color:var(--pink);
+      font-weight:bold;
+    }
+
+    .note{margin-top:10px;text-align:center;font-size:14px;opacity:.85;}
+  </style>
+</head>
+
+<body>
+  <main class="app" role="main">
+    <header>
+      <h1 class="title">Calyssa’s Magic 8-Ball</h1>
+      <p class="subtitle">Ask a yes/no question… then tap “Shake”.</p>
+    </header>
+
+    <!-- Hero area -->
+    <section class="hero" aria-label="Hero">
+      <div class="avatar" aria-label="Cartoon of Calyssa">
+        <img src="./calyssa.png" alt="Cartoon of Calyssa">
+      </div>
+
+      <div class="ball" id="ball" aria-label="Magic 8-Ball">
+        <div class="window" id="window">8</div>
+      </div>
+    </section>
+
+    <!-- Question form -->
+    <section class="card" aria-label="Question form">
+      <form id="form">
+        <div class="row">
+          <input id="question" type="text"
+                 placeholder="e.g., Should I get T-Bell tonight?"
+                 aria-label="Type your yes/no question">
+          <button id="shakeBtn" type="submit">Shake 🎱</button>
+        </div>
+      </form>
+      <div class="answer" id="answer" aria-live="polite"></div>
+    </section>
+
+    <p class="note">Tip: Press Enter after typing your question.</p>
+  </main>
+
+  <script>
+    // 8-Ball responses
+    const RESPONSES = [
+      "It is certain.","It is decidedly so.","Without a doubt.","Yes — definitely.",
+      "You may rely on it.","As I see it, yes.","Most likely.","Outlook good.",
+      "Yes.","Signs point to yes.","Reply hazy, try again.","Ask again later.",
+      "Better not tell you now.","Cannot predict now.","Concentrate and ask again.",
+      "Don’t count on it.","My reply is no.","My sources say no.",
+      "Outlook not so good.","Very doubtful."
+    ];
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('question');
+    const ball = document.getElementById('ball');
+    const windowEl = document.getElementById('window');
+    const answer = document.getElementById('answer');
+
+    function randomResponse(){
+      const i = Math.floor(Math.random()*RESPONSES.length);
+      return RESPONSES[i];
+    }
+
+    function shakeBallAndAnswer(){
+      ball.classList.remove('shake');
+      void ball.offsetWidth; // restart animation
+      ball.classList.add('shake');
+
+      windowEl.textContent = "…";
+      answer.textContent = "";
+      setTimeout(()=>{
+        const reply = randomResponse();
+        windowEl.textContent = "8";
+        answer.textContent = reply;
+      },550);
+    }
+
+    form.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const q = input.value.trim();
+      if(!q){
+        answer.textContent = "Ask a yes/no question first!";
+        input.focus();
+        return;
+      }
+      shakeBallAndAnswer();
+    });
+  </script>
+</body>
+</html>
